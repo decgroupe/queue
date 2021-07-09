@@ -8,6 +8,7 @@ import base64
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
+from odoo.tools.mimetypes import guess_mimetype
 from odoo.addons.queue_job.job import job
 from odoo.addons.web.controllers.main import CSVExport, ExcelExport
 from odoo.exceptions import UserError
@@ -52,8 +53,11 @@ class DelayExport(models.Model):
                            if field['name'] != 'id']
 
         field_names = [f['name'] for f in fields_name]
-        import_data = records.export_data(
-            field_names, raw_data).get('datas', [])
+        try:
+            import_data = records.export_data(
+                field_names, raw_data).get('datas', [])
+        except Exception as e:
+            pass
 
         if import_compat:
             columns_headers = field_names
